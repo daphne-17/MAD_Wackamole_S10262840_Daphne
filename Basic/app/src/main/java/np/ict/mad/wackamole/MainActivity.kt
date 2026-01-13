@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     GameScreen(navController)
                 }
                 composable("settings") {
-
+                    SettingsScreen(navController)
                 }
             }
         }
