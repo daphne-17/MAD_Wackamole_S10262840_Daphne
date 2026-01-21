@@ -1,5 +1,6 @@
 package np.ict.mad.wackamole
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -7,11 +8,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,6 +24,17 @@ fun GameScreen(navController: NavController) {
     var moleIndex by remember { mutableStateOf(-1) }
     var isRunning by remember { mutableStateOf(false) }
     var gameOver by remember { mutableStateOf(false) }
+    var canHit by remember { mutableStateOf(true) }
+
+    // --- SharedPreferences (INLINE) ---
+    val context = LocalContext.current
+    val prefs = remember {
+        context.getSharedPreferences("wackamole_prefs", Context.MODE_PRIVATE)
+    }
+
+    var highScore by remember {
+        mutableStateOf(prefs.getInt("high_score", 0))
+    }
 
     // --- Timer ---
     LaunchedEffect(isRunning) {
@@ -33,22 +45,29 @@ fun GameScreen(navController: NavController) {
             }
             isRunning = false
             gameOver = true
+
+            // Update high score on game end if beaten
+            if (score > highScore) {
+                highScore = score
+                prefs.edit()
+                    .putInt("high_score", score)
+                    .apply()
+            }
         }
     }
 
-    // --- Mole movement coroutine ---
+    // --- Mole movement ---
     LaunchedEffect(isRunning) {
         if (isRunning) {
             while (isRunning) {
                 delay((700..1000).random().toLong())
                 moleIndex = (0..8).random()
+                canHit = true
             }
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
         // Top App Bar
         TopAppBar(
@@ -62,24 +81,27 @@ fun GameScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Score & Timer
+        // Score / Time
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(
-                text = "Score: $score",
-                fontSize = 20.sp
-            )
-            Text(
-                text = "Time: $timeLeft",
-                fontSize = 20.sp
-            )
+            Text("Score: $score", fontSize = 18.sp)
+            Text("Time: $timeLeft", fontSize = 18.sp)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Text("High: $highScore", fontSize = 18.sp)
         }
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Mole Grid (3x3)
+        // Static 3×3 Grid
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -90,9 +112,12 @@ fun GameScreen(navController: NavController) {
                         val index = row * 3 + col
 
                         Button(
-                            onClick = { if (isRunning && index == moleIndex) {
-                                score++
-                            } },
+                            onClick = {
+                                if (isRunning && canHit && index == moleIndex) {
+                                    score++
+                                    canHit = false
+                                }
+                            },
                             modifier = Modifier
                                 .padding(8.dp)
                                 .size(90.dp)
@@ -108,10 +133,9 @@ fun GameScreen(navController: NavController) {
             }
         }
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Start / Restart Button
+        // Start / Restart
         Button(
             onClick = {
                 score = 0
@@ -119,19 +143,20 @@ fun GameScreen(navController: NavController) {
                 moleIndex = -1
                 isRunning = true
                 gameOver = false
+                canHit = true
             },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text(if (isRunning) "Restart" else "Start")
         }
 
-        // Game Over text
+        // Game Over
         if (gameOver) {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Game Over! Final Score: $score",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
