@@ -7,7 +7,8 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [UserEntity::class, ScoreEntity::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -23,7 +24,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "wackamole_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // 🚨 REQUIRED
+                    .build()
                 INSTANCE = instance
                 instance
             }

@@ -26,6 +26,16 @@ interface AppDao {
         "SELECT MAX(score) FROM scores WHERE userId = :userId"
     )
     suspend fun getPersonalBest(userId: Int): Int?
+
+    @Query("""
+    SELECT users.username, MAX(scores.score) AS bestScore
+    FROM users
+    INNER JOIN scores ON users.userId = scores.userId
+    GROUP BY users.userId
+    ORDER BY bestScore DESC
+""")
+    suspend fun getLeaderboard(): List<Leaderboard>
+
 }
 
 
