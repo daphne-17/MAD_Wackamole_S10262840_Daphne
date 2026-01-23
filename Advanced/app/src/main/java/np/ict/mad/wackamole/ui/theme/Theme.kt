@@ -2,6 +2,8 @@ package np.ict.mad.wackamole.ui.theme
 
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import np.ict.mad.wackamole.ui.theme.Purple80
+
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
