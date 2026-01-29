@@ -14,43 +14,43 @@ The LLM was mainly used to
 
 # Changes Made:
 1. Leaderboard Feature Design (Advanced Extension)
-   Before:
+Before:
     Scores were stored per user, but there was no way to compare results across users.
 
-   After:
+After:
     SELECT users.username, MAX(scores.score) AS bestScore
     FROM users
     INNER JOIN scores ON users.userId = scores.userId
     GROUP BY users.userId
     ORDER BY bestScore DESC
 
-   Reason for change:
+Reason for change:
     The LLM helped suggest an SQL aggregation approach to retrieve each user’s personal best score, enabling the implementation of a leaderboard that compares multiple users.
 
 2. UI & Theme Debugging
-   Issue:
+Issue:
     Unresolved references to colour constants in Theme.kt.
 
-   Resolution:
+Resolution:
     The LLM helped identify missing imports and package alignment issues between Color.kt and Theme.kt.
 
-   Lesson:
+Lesson:
     Correct package structure and explicit imports are required for Compose theme files to compile properly.
 
 3. Coroutine Usage in Compose (Database Stability)
-   Before (problematic approach):
+Before (problematic approach):
     CoroutineScope(Dispatchers.IO).launch {
         db.dao().insertUser(user)
     }
 
-   After (improved approach):
+After (improved approach):
     val scope = rememberCoroutineScope()
 
-    scope.launch(Dispatchers.IO) {
+   scope.launch(Dispatchers.IO) {
         db.dao().insertUser(user)
     }
 
-   Reason for change:
+Reason for change:
     The LLM helped identify that manually creating a CoroutineScope inside a Composable could cause lifecycle issues and database access errors. The revised approach uses a Compose-aware coroutine     scope, improving stability and preventing “database is closed” errors.
 
 # Key Takeaways / Lessons Learnt
