@@ -14,8 +14,10 @@ The LLM was mainly used to
 
 # Changes Made:
 1. Leaderboard Feature Design (Advanced Extension)
+   
 Before:
-    Scores were stored per user, but there was no way to compare results across users.
+
+Scores were stored per user, but there was no way to compare results across users.
 
 After:
     SELECT users.username, MAX(scores.score) AS bestScore
