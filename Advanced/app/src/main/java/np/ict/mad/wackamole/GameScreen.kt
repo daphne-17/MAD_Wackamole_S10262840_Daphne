@@ -25,7 +25,7 @@ fun GameScreen(
     currentUser: UserEntity
 ) {
 
-    // --- Game state ---
+    // Game state
     var score by remember { mutableStateOf(0) }
     var timeLeft by remember { mutableStateOf(30) }
     var moleIndex by remember { mutableStateOf(-1) }
@@ -33,9 +33,9 @@ fun GameScreen(
     var gameOver by remember { mutableStateOf(false) }
     var canHit by remember { mutableStateOf(true) }
 
-    // --- Advanced state ---
+    // Advanced state
     var personalBest by remember { mutableStateOf(0) }
-    var scoreSaved by remember { mutableStateOf(false) } // 👈 guard
+    var scoreSaved by remember { mutableStateOf(false) }
 
     // Load personal best on login
     LaunchedEffect(currentUser.userId) {
@@ -45,7 +45,7 @@ fun GameScreen(
         personalBest = best ?: 0
     }
 
-    // --- Timer ---
+    // Timer
     LaunchedEffect(isRunning) {
         if (isRunning) {
             while (timeLeft > 0) {
@@ -57,7 +57,7 @@ fun GameScreen(
         }
     }
 
-    // --- Mole movement ---
+    // Mole movement
     LaunchedEffect(isRunning) {
         if (isRunning) {
             while (isRunning) {
@@ -68,7 +68,7 @@ fun GameScreen(
         }
     }
 
-    // --- Save score ONCE when game ends ---
+    //  Save score ONCE when game ends
     LaunchedEffect(gameOver) {
         if (gameOver && !scoreSaved) {
             scoreSaved = true

@@ -17,10 +17,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            // Navigation controller
             val navController = rememberNavController()
 
-            // Create Room database (Advanced)
             val db = remember {
                 AppDatabase.getDatabase(applicationContext)
             }
@@ -35,7 +33,6 @@ class MainActivity : ComponentActivity() {
                 startDestination = "login"
             ) {
 
-                // 🔐 Login / Sign Up Screen
                 composable(route = "login") {
                     LoginScreen(
                         db = db,
@@ -48,7 +45,6 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                // 🎮 Game Screen (Advanced)
                 composable(route = "game") {
                     currentUser?.let { user ->
                         GameScreen(
@@ -59,7 +55,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // ⚙ Settings Screen (optional)
                 composable(route = "settings") {
                     SettingsScreen(navController)
                 }
