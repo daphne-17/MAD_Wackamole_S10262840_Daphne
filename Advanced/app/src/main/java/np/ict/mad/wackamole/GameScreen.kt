@@ -68,7 +68,7 @@ fun GameScreen(
         }
     }
 
-    //  Save score ONCE when game ends
+    //  Save score when game ends
     LaunchedEffect(gameOver) {
         if (gameOver && !scoreSaved) {
             scoreSaved = true
